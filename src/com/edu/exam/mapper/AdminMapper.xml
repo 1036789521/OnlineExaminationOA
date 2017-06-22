@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exam.mapper.AdminMapper">
+	<!-- 通用查询班级信息结果列 -->
+	<sql id="classesInfo">
+		classes_t.id,classes_t.className,classes_t.classType,
+		classes_t.classBeginDate,classes_t.classDuration,classes_t.classStatus,
+		classes_t.adviserName,classes_t.adviserEntry_time,classes_t.adviserWork_experience,
+		classes_t.adviserStatus,classes_t.trainerName,classes_t.trainerEntry_time,
+		classes_t.trainerWork_experience,classes_t.trainerStatus
+	</sql>
+	
+	<!-- 班级管理 -->
+     <insert id="addClasses" parameterType="com.edu.exam.entity.Classes" keyProperty="id" useGeneratedKeys="true">
+     INSERT INTO classes_t
+	(className,classType,classBeginDate,classDuration,
+	classStatus,adviserName,trainerName)
+	VALUES(#{className},#{classType},#{classBeginDate},#{classDuration},
+	#{classStatus},#{adviserName},#{trainerName});
+     </insert>
+     <!-- 根据id查询班级信息 -->
+     <select id="findClassesById" parameterType="java.lang.String" resultType="com.edu.exam.entity.Classes">
+        SELECT 
+        <include refid="classesInfo"/>
+        FROM
+		classes_t
+		WHERE id=#{classesid}
+     </select>
+     
+	<select id="findClasses" parameterType="com.edu.exam.entity.Classes" resultType="Classes" >
+		SELECT classes_t.className,classes_t.classType,classes_t.classBeginDate,
+		classes_t.classDuration,classes_t.classStatus,classes_t.adviserName,
+		classes_t.trainerName
+		FROM
+		classes_t
+		WHERE className=#{classes_t.className}
+	</select>
+	<select id="findAllClasses" resultType="Classes" >
+		SELECT
+			<include refid="classesInfo"></include>
+			FROM
+			classes_t
+			WHERE classes_t.className !=""
+	</select>
+	<delete id="deleteClasses" parameterType="com.edu.exam.entity.Classes"  >
+			DELETE FROM classes_t
+			WHERE className=#{className}
+	</delete>
+	
+	<!-- 班主任管理 -->
+	 <insert id="addAdvisor" parameterType="com.edu.exam.entity.Classes" keyProperty="id" useGeneratedKeys="true">
+     INSERT INTO classes_t
+	(adviserName,adviserEntry_time,adviserStatus)
+	VALUES(#{adviserName},#{adviserEntry_time},#{adviserStatus});
+     </insert>
+     <select id="findAllAdviser" resultType="Classes" >
+		SELECT
+			classes_t.id,
+			classes_t.className,
+			classes_t.classType,
+			classes_t.classBeginDate,
+			classes_t.classDuration,
+			classes_t.classStatus,
+			classes_t.adviserName,
+			classes_t.adviserEntry_time,
+			classes_t.adviserWork_experience,
+			classes_t.adviserStatus,
+			classes_t.trainerName,
+			classes_t.trainerEntry_time,
+			classes_t.trainerWork_experience,
+			classes_t.trainerStatus
+			FROM
+			classes_t
+			WHERE classes_t.adviserName !=""
+	</select>
+	<delete id="deleteAdviser" parameterType="com.edu.exam.entity.Classes"  >
+			DELETE FROM classes_t
+			WHERE adviserName=#{adviserName}
+	</delete>
+     
+     <select id="findAdvisor" parameterType="com.edu.exam.entity.Classes" resultType="Classes">
+		SELECT 
+		classes_t.adviserName,
+		classes_t.adviserEntry_time,
+		classes_t.adviserWork_experience,
+		classes_t.adviserStatus
+		FROM
+		classes_t
+		WHERE adviserName=#{classes_t.className}
+	</select>
+	 <update id="updateClasses" parameterType="com.edu.exam.entity.Classes" >
+           update classes_t
+            set classes_t.className = #{className}, 
+            classes_t.classType = #{classType},
+            classes_t.classBeginDate = #{classBeginDate}, 
+            classes_t.classDuration = #{classDuration},
+            classes_t.classStatus=#{classStatus},
+            classes_t.adviserName=#{adviserName},
+            classes_t.trainerName=#{trainerName}
+               where className = #{className}
+   </update>
+	
+	
+	<!-- 试题管理 -->
+	<select id="findAllItem_t" resultType="Item_t" >
+		SELECT
+		item_t.id,
+		item_t.question,
+		item_t.option_A,
+		item_t.option_B,
+		item_t.option_C,
+		item_t.option_D,
+		item_t.questionid,
+		item_t.answer
+		FROM
+		item_t
+	</select>
+	
+	
+
+</mapper>

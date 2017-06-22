@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exam.mapper.StudentPaperMapper">
+	<select id="getItemByPaperId" parameterType="int" resultMap="MyResult">
+		select * from item_paper_rt ipr,item_t it where ipr.item_id=it.id and
+		ipr.per_id=#{id}
+	</select>
+	<resultMap type="com.edu.exam.entity.Item_paper_rt" id="MyResult">
+		<id property="id" column="id" />
+		<result property="per_id" column="per_id" />
+		<result property="score" column="score" />
+		<result property="item_id" column="item_id" />
+		<collection property="item" ofType="com.edu.exam.entity.Item_t"
+			column="item_id">
+			<id property="id" column="id" />
+			<result property="question" column="question" />
+			<result property="option_A" column="option_A" />
+			<result property="option_B" column="option_B" />
+			<result property="option_C" column="option_C" />
+			<result property="option_D" column="option_D" />
+			<result property="questionid" column="questionid" />
+			<result property="answer" column="answer" />
+		</collection>
+	</resultMap>
+
+	<select id="getQuestionTypes" resultType="Questiontype">
+		select * from
+		questiontype
+	</select>
+
+	<select id="getXztList" resultType="Integer">
+		select id from item_t
+		where
+		questionid=1;
+	</select>
+
+	<select id="getPdtList" resultType="Integer">
+		select id from item_t
+		where
+		questionid=2;
+	</select>
+
+	<insert id="addPaper_t" parameterType="com.edu.exam.entity.Paper_t" keyProperty="paper_id"
+		useGeneratedKeys="true">
+		insert into paper_t(papername,count,paperType)
+		values(#{papername},#{count},#{paperType})
+	</insert>
+
+	<insert id="addXzts" parameterType="java.util.List">
+		insert into item_paper_rt(per_id,score,item_id)
+		values
+		<foreach collection="list" item="xzt_lis" separator=",">
+			(#{xzt_lis.per_id},#{xzt_lis.score}, #{xzt_lis.item_id})
+		</foreach>
+	</insert>
+
+	<insert id="addPdts" parameterType="java.util.List">
+		insert into item_paper_rt(per_id,score,item_id)
+		values
+		<foreach collection="list" item="pdt_lis" separator=",">
+			(#{pdt_lis.per_id},#{pdt_lis.score}, #{pdt_lis.item_id})
+		</foreach>
+	</insert>
+
+	<insert id="saveAnswerInfo" parameterType="com.edu.exam.entity.PaperAnswerStudent">
+		insert into
+		paperanswerstudent(student_id,paper_id,item_id,answer_item,student_answer,score)
+		values
+		<foreach collection="list" item="pas" separator=",">
+			(#{pas.student_id},#{pas.paper_id},#{pas.item_id},#{pas.answer_item},#{pas.student_answer},#{pas.score})
+		</foreach>
+	</insert>
+
+	<update id="addScore" parameterType="java.util.Map">
+		update student_exam_rt
+		set
+		score=#{score},status=#{status} where
+		id=#{examid}
+		and
+		studentid=#{studentid};
+	</update>
+
+	<insert id="additems" parameterType="com.edu.exam.entity.Item_t">
+		insert into
+		item_t
+		(questionid,question,option_A,option_B,option_C,option_D,answer)
+		values(#{questionid},#{question},#{option_A},#{option_B},#{option_C},#{option_D},#{answer})
+	</insert>
+
+	<select id="getItemById" resultType="com.edu.exam.entity.Item_t">
+		select * from item_t where
+		id=#{item_id}
+	</select>
+
+	<delete id="deleteItemById" parameterType="int">
+		delete from item_t
+		where id=#{item_id}
+	</delete>
+
+	<update id="updates" parameterType="com.edu.exam.entity.Item_t">
+		update item_t set
+		questionid=#{questionid},question=#{question},option_A=#{option_A},option_B=#{option_B},option_C=#{option_C},option_D=#{option_D},answer=#{answer}
+		where id=#{id}
+	</update>
+	<select id="getAllPapers" resultType="com.edu.exam.entity.Paper_t">
+		select * 
+		from paper_t where 1=1 ;
+	</select>
+	<select id="getAllExams"  resultType="com.edu.exam.entity.Exam">
+		select *
+		from exam_t where 1=1 ;
+	</select>
+	<select id="getExamById" resultType="com.edu.exam.entity.Exam">
+		select *
+		from exam_t where id = #{examId} ;
+	</select>
+	<delete id="delPaperById" parameterType="java.lang.String">
+		delete from paper_t
+		where paper_id = #{paperId} ;
+	</delete>
+	<select id="getItemsByPaperId" parameterType="int" resultType="com.edu.exam.entity.Item_t">
+		SELECT i.id, i.answer 
+		FROM (SELECT rt.item_id as itemid
+			  FROM item_paper_rt  rt
+			  WHERE rt.per_id = #{paperId}
+			  ) s,item_t i
+		WHERE s.itemid = i.id;
+	</select>
+	
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.exam.mapper.StudentMapper">
+	<resultMap type="com.edu.exam.entity.Student" id="studentMap">
+		<id property="id" column="id"></id>
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="agender" column="agender" />
+		<result property="natives" column="natives" />
+		<result property="phone" column="phone" />
+		<result property="school" column="school" />
+		<result property="status" column="status" />
+		<result property="enter_time" column="enter_time" />
+		<result property="file" column="file" />
+		<result property="birthday" column="birthday" />
+		<result property="type" column="type" />
+		<result property="role" column="role" />
+		<association property="classes" javaType="com.edu.exam.entity.Classes" column="classesid">
+			<id property="id" column="id" />
+			<result property="className" column="className" />
+			<result property="classType" column="classType" />
+			<result property="classBeginDate" column="classBeginDate" />
+			<result property="classDuration" column="classDuration" />
+			<result property="classStatus" column="classStatus" />
+			<result property="adviserName" column="adviserName" />
+			<result property="adviserEntry_time" column="adviserEntry_time" />
+			<result property="adviserWork_experience" column="adviserWork_experience" />
+			<result property="adviserStatus" column="adviserStatus" />
+			<result property="trainerName" column="trainerName" />
+			<result property="trainerEntry_time" column="trainerEntry_time" />
+			<result property="trainerWork_experience" column="trainerWork_experience" />
+			<result property="trainerStatus" column="trainerStatus" />
+		</association>
+	</resultMap>
+	<resultMap type="com.edu.exam.entity.Student_Exam" id="findExamsMap">
+		<id property="id" column="id" />
+		<result property="score" column="score" />
+		<result property="status" column="status" />
+		<collection property="exam" javaType="com.edu.exam.entity.Exam" column="examid">
+			<id property="id" column="id" />
+			<result property="name" column="name" />
+			<result property="begin_time" column="begin_time" />
+			<result property="over_time" column="over_time" />
+			<result property="paperid" column="paperid" />
+		</collection>
+	</resultMap>
+	
+	<select id="getAll" resultMap="studentMap">
+		select * 
+		from student_t as s ,classes_t as c
+	    where s.classesid = c.id
+	</select>
+	
+	<select id="getStudentByUserName" parameterType="java.lang.String" resultMap="studentMap">
+		select
+		*
+		from student_t as s
+		left join classes_t as c on c.id=s.classesid
+		where s.username= #{username}
+	</select>
+	
+	<select id="getExamsOfStudent" resultMap="findExamsMap">
+		select s.id ,s.examid,s.studentid,s.score,s.status , e.name
+		,e.begin_time,e.over_time,e.paperid
+		from exam_t as e ,student_exam_rt as s
+		where s.studentid = #{studentid} AND e.id =
+		s.examid
+	</select>
+	
+	<update id="modifyPwd">
+		update student_t
+		set password = #{newPwd,jdbcType = VARCHAR ,javaType = String}
+		where id =
+		#{id,jdbcType = INTEGER ,javaType=int }
+	</update>
+
+	<select id="getStudentById" resultMap="studentMap" parameterType="int">
+		select
+		*
+		from student_t as s
+		left join classes_t as c on c.id=s.classesid
+		where s.id= #{id}
+	</select>
+	
+	<update id="updateStudentById" parameterType="com.edu.exam.entity.Student">
+		update student_t
+		set name=#{name},agender=#{agender},natives=#{natives},phone=#{phone},birthday=#{birthday}
+		where id = #{id}
+	</update>
+	<insert id="InsertStudent"  parameterType="com.edu.exam.entity.Student" >
+	    insert into student_t(username,password,name,email)  
+	    values (#{username}, #{password}, #{name}, #{email})
+	</insert>
+</mapper>
